@@ -1,4 +1,18 @@
-"""10M events/sec ingestion into Delta Lake."""
-from .lakehouse import DataLakehouse
+"""High-throughput market data ingestion and query engine."""
+from .lakehouse import (
+    AssetClass,
+    DataLakehouse,
+    IngestionStats,
+    OHLCVBar,
+    PartitionManager,
+    QueryResult,
+)
 
-__all__ = ["DataLakehouse"]
+__all__ = [
+    "AssetClass",
+    "DataLakehouse",
+    "IngestionStats",
+    "OHLCVBar",
+    "PartitionManager",
+    "QueryResult",
+]
