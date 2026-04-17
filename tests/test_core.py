@@ -3,7 +3,6 @@
 Covers OHLCV data model validation, partition management, ingestion,
 flushing, querying with time-range filters, and batch operations.
 """
-import tempfile
 from datetime import datetime, timedelta
 from pathlib import Path
 

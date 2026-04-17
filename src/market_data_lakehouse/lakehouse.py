@@ -4,15 +4,13 @@ Provides columnar storage using Parquet with time-series partitioning,
 batch ingestion, OHLCV data model, and efficient time-range queries.
 """
 import logging
-import os
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Optional
 
-import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +30,7 @@ except ImportError:
     logger.warning("pyarrow not installed — using CSV fallback storage")
 
 try:
-    import pandas as pd
+    import pandas as pd  # noqa: F401
     HAS_PANDAS = True
 except ImportError:
     HAS_PANDAS = False
