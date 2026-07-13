@@ -1,15 +1,15 @@
 # market-data-lakehouse
 
-> OHLCV market data ingestion pipeline with time-partitioned Parquet storage and sub-second analytical queries via DuckDB
+> OHLCV market data ingestion pipeline with date-partitioned Parquet storage and DuckDB integration
 
 [![CI](https://github.com/jrajath94/market-data-lakehouse/workflows/CI/badge.svg)](https://github.com/jrajath94/market-data-lakehouse/actions)
 [![Coverage](https://codecov.io/gh/jrajath94/market-data-lakehouse/branch/master/graph/badge.svg)](https://codecov.io/gh/jrajath94/market-data-lakehouse)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-green.svg)](https://www.python.org/downloads/)
+[![Python 3.9+](https://img.shields.io/badge/Python-3.9+-green.svg)](https://www.python.org/downloads/)
 
 ## Why This Exists
 
-Market data feeds produce 10M+ events per day per instrument. Standard event storage (flat CSV files) adds query latency and operational complexity: scanning an 8GB CSV file to find trades for a single stock takes seconds. This ingestion pipeline writes OHLCV bars to date-partitioned Apache Arrow/Parquet files, enabling sub-second analytical queries without a data warehouse. A CSV fallback is included for environments without PyArrow. The storage layer is designed to plug into DuckDB for interactive analytics on single-node hardware.
+Market data feeds produce millions of events per day per instrument. Standard event storage (flat CSV files) adds query latency and operational complexity. This ingestion pipeline writes OHLCV bars to date-partitioned Parquet files, with a CSV fallback for environments without PyArrow. The storage layer is designed to integrate with DuckDB for interactive analytics.
 
 ## Architecture
 
@@ -69,7 +69,7 @@ print(f"Bars: {result.count}, scanned in {result.query_time_ms:.1f}ms")
 
 | Decision | Rationale | Alternative Considered | Tradeoff |
 |----------|-----------|----------------------|----------|
-| Parquet columnar storage | All prices for a symbol are stored together; column compression (run-length, delta encoding) achieves 6-12x over CSV for time-series data | CSV (human-readable, no dependency) | Binary format requires tooling; PyArrow dependency added, with CSV fallback for environments without it |
+| Parquet columnar storage | All prices for a symbol are stored together; columnar layout enables compression | CSV (human-readable, no dependency) | Binary format requires tooling; PyArrow optional, with CSV fallback for environments without it |
 | Date-based partitioning | Most market data queries are time-bounded (`WHERE date = '2024-01-15'`); partition pruning eliminates scanning irrelevant files | Partition by symbol (creates too many small files at 8k+ symbols) | Single-stock queries read one partition; cross-day aggregations scan multiple partitions |
 | Batched writes with auto-flush | Amortizes write overhead across multiple bars; reduces per-write syscall overhead | Synchronous per-bar writes (simpler) | Small write latency (buffered until batch fills) but much higher sustained throughput |
 | PyArrow with CSV fallback | Graceful degradation — the core pipeline works even without PyArrow installed | Require PyArrow (simpler code) | Slightly more complex read/write dispatch but usable in constrained environments |
@@ -79,8 +79,7 @@ print(f"Bars: {result.count}, scanned in {result.query_time_ms:.1f}ms")
 
 ```bash
 make test    # Unit + integration tests
-make bench   # Ingest and query benchmarks
-make lint    # Ruff + mypy
+make clean   # Clean up cache files
 ```
 
 ## License
