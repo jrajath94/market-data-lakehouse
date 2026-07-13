@@ -1,6 +1,6 @@
 # market-data-lakehouse
 
-> OHLCV market data ingestion pipeline with date-partitioned Parquet storage and DuckDB integration
+> OHLCV market data ingestion pipeline with date-partitioned Parquet storage
 
 [![CI](https://github.com/jrajath94/market-data-lakehouse/workflows/CI/badge.svg)](https://github.com/jrajath94/market-data-lakehouse/actions)
 [![Coverage](https://codecov.io/gh/jrajath94/market-data-lakehouse/branch/master/graph/badge.svg)](https://codecov.io/gh/jrajath94/market-data-lakehouse)
@@ -9,7 +9,7 @@
 
 ## Why This Exists
 
-Market data feeds produce millions of events per day per instrument. Standard event storage (flat CSV files) adds query latency and operational complexity. This ingestion pipeline writes OHLCV bars to date-partitioned Parquet files, with a CSV fallback for environments without PyArrow. The storage layer is designed to integrate with DuckDB for interactive analytics.
+Market data feeds produce millions of events per day per instrument. Standard event storage (flat CSV files) adds query latency and operational complexity. This ingestion pipeline writes OHLCV bars to date-partitioned Parquet files, with a CSV fallback for environments without PyArrow.
 
 ## Architecture
 
@@ -22,7 +22,7 @@ graph TD
     E -->|batch_size threshold| F[flush]
     F --> G[PartitionManager - group by date]
     G --> H{PyArrow available?}
-    H -->|yes| I[Write Parquet - Snappy compressed]
+    H -->|yes| I[Write Parquet]
     H -->|no| J[Write CSV fallback]
     I --> K[date-partitioned directory tree]
     J --> K
