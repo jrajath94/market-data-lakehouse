@@ -32,7 +32,7 @@ graph TD
     N --> O[QueryResult - bars + timing]
 ```
 
-The pipeline has three stages. The **ingest layer** validates each bar (high >= low, open/close within range, non-negative volume) and buffers up to `batch_size` records before an auto-flush. The **storage layer** writes Parquet files partitioned by date: `base_path/YYYY-MM-DD/data_<ts>.parquet`. The **query layer** resolves which partitions overlap the requested time range, reads only those files, and applies symbol and timestamp filters — skipping all other data on disk.
+The pipeline has three stages. The **ingest layer** validates each bar (high >= low, open/close within range, non-negative volume) and buffers up to `batch_size` records before an auto-flush. The **storage layer** writes Parquet files partitioned by date: `base_path/YYYY-MM-DD/data_<ts>.parquet`. The **query layer** resolves which partitions overlap the requested time range, reads only those files, and applies symbol and timestamp filters - skipping all other data on disk.
 
 ## Quick Start
 
@@ -72,7 +72,7 @@ print(f"Bars: {result.count}, scanned in {result.query_time_ms:.1f}ms")
 | Parquet columnar storage | All prices for a symbol are stored together; columnar layout enables compression | CSV (human-readable, no dependency) | Binary format requires tooling; PyArrow optional, with CSV fallback for environments without it |
 | Date-based partitioning | Most market data queries are time-bounded (`WHERE date = '2024-01-15'`); partition pruning eliminates scanning irrelevant files | Partition by symbol (creates too many small files at 8k+ symbols) | Single-stock queries read one partition; cross-day aggregations scan multiple partitions |
 | Batched writes with auto-flush | Amortizes write overhead across multiple bars; reduces per-write syscall overhead | Synchronous per-bar writes (simpler) | Small write latency (buffered until batch fills) but much higher sustained throughput |
-| PyArrow with CSV fallback | Graceful degradation — the core pipeline works even without PyArrow installed | Require PyArrow (simpler code) | Slightly more complex read/write dispatch but usable in constrained environments |
+| PyArrow with CSV fallback | Graceful degradation - the core pipeline works even without PyArrow installed | Require PyArrow (simpler code) | Slightly more complex read/write dispatch but usable in constrained environments |
 | Frozen `OHLCVBar` validation method | Validates OHLC relationships at the data model level, not the storage level | Validate at ingest time only | Bar integrity is enforced regardless of how the bar was constructed |
 
 ## Testing
@@ -84,4 +84,4 @@ make clean   # Clean up cache files
 
 ## License
 
-MIT — Rajath John
+MIT - Rajath John
